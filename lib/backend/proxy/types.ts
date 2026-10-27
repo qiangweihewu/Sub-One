@@ -4,6 +4,9 @@
  *
  */
 
+import type { TemplateName } from './template/catalog';
+import type { RuleCdn } from './template/sources';
+
 // ============================================================================
 // 代理协议类型
 // ============================================================================
@@ -402,6 +405,10 @@ export interface ConvertOptions {
     'include-unsupported-proxy'?: boolean; // 是否包含不支持的代理 (kebab-case)
     includeUnsupportedProxy?: boolean; // 是否包含不支持的代理 (camelCase)
     useMihomoExternal?: boolean; // 是否使用 Mihomo External
+    template?: string; // 分流模板：none | minimal | balanced | full（未设置 = none，只输出节点）
+    ruleCdn?: 'testingcf' | 'jsdelivr' | 'raw' | 'custom'; // 规则集 CDN
+    ruleCdnTemplate?: string; // ruleCdn = custom 时的 URL 模板
+    userAgent?: string; // 客户端 UA（用于判断 mrs / sing-box 版本等）
     [key: string]: any; // 其他平台特定选项
 }
 
@@ -483,6 +490,11 @@ export interface AppConfig {
     useExternalConverter?: boolean; // 是否使用外部转换API
     externalConverterUrl?: string; // 外部转换API地址
     externalConverterApis?: string[]; // 默认候选API列表
+
+    // 分流模板
+    ruleTemplate?: TemplateName; // 全局默认分流模板
+    ruleCdn?: RuleCdn; // 规则集 CDN
+    ruleCdnTemplate?: string; // ruleCdn = custom 时的 URL 模板
 
     // 通知配置
     BotToken?: string;
@@ -566,4 +578,5 @@ export interface Profile {
     type?: string; // Output format (e.g., 'base64')
     updatedAt?: number;
     rename?: string; // 订阅组节点重命名规则 (每行一条: 匹配@替换)
+    template?: TemplateName; // 分流模板（不设 = 跟随全局设置）
 }

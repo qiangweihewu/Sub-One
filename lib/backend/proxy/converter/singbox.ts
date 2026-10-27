@@ -2,18 +2,73 @@
  * Sub-One Sing-box Converter
  */
 import type { ConvertOptions, ProxyNode } from '../types';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import {
+    isLegacySingbox,
+    wireguardOutboundToEndpoint,
+    renderSingboxTemplate,
+    SINGBOX_DIRECT_TAG
+} from '../template/renderers/singbox';
 import { BaseConverter } from './base';
 import { isPresent } from './utils';
 
 export class SingboxConverter extends BaseConverter {
     name = 'Singbox';
 
-    async convert(nodes: ProxyNode[], _options: ConvertOptions = {}): Promise<string> {
+    async convert(nodes: ProxyNode[], options: ConvertOptions = {}): Promise<string> {
         const outbounds = nodes.flatMap((node) => {
             const result = this.toOutbound(node);
             if (!result) return [];
             return Array.isArray(result) ? result : [result];
         });
+
+        const preset = resolvePreset(options);
+        if (preset) {
+            const legacy = isLegacySingbox(options.userAgent);
+            // 1.12 才引入的出站类型，旧格式（客户端 < 1.12）不输出
+            const NEW_ONLY_TYPES = new Set(['anytls']);
+            const real = outbounds.filter(
+                (ob: any) =>
+                    ob &&
+                    !['direct', 'block', 'dns'].includes(ob.type) &&
+                    !(legacy && NEW_ONLY_TYPES.has(ob.type))
+            );
+            // 被其他 outbound 以 detour 引用的 shadowtls 辅助出站不是可选节点
+            const detoured = new Set(real.map((o: any) => o.detour).filter(Boolean));
+            const isHelper = (o: any) => o.type === 'shadowtls' && detoured.has(o.tag);
+
+            // tag 必须唯一，且不能与内置 direct 冲突；改名时同步更新引用它的 detour
+            const used = new Set<string>([SINGBOX_DIRECT_TAG]);
+            const renamed = new Map<string, string>();
+            const items: any[] = real.map((ob: any) => {
+                let tag = String(ob.tag);
+                for (let i = 2; used.has(tag); i++) tag = `${ob.tag} ${i}`;
+                used.add(tag);
+                if (tag !== ob.tag && !renamed.has(ob.tag)) renamed.set(ob.tag, tag);
+                return tag === ob.tag ? ob : { ...ob, tag };
+            });
+            const fixed = items.map((o) =>
+                o.detour && renamed.has(o.detour) ? { ...o, detour: renamed.get(o.detour) } : o
+            );
+
+            const proxies: any[] = [];
+            const endpoints: any[] = [];
+            for (const o of fixed) {
+                if (!legacy && o.type === 'wireguard') endpoints.push(wireguardOutboundToEndpoint(o));
+                else proxies.push(o);
+            }
+            const plan = buildPlan(
+                [...proxies, ...endpoints].filter((o) => !isHelper(o)).map((o) => o.tag),
+                preset
+            );
+            const config = renderSingboxTemplate(
+                plan,
+                proxies,
+                { ...ruleSourceOptions(options), legacy },
+                endpoints
+            );
+            return JSON.stringify(config, null, 2);
+        }
         return JSON.stringify({ outbounds }, null, 2);
     }
 

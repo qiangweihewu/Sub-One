@@ -4,6 +4,8 @@
 import yaml from 'js-yaml';
 
 import type { ConvertOptions, ProxyNode } from '../types';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { renderShadowrocketTemplate } from '../template/renderers/shadowrocket';
 import { BaseConverter } from './base';
 import { isPresent } from './utils';
 
@@ -14,9 +16,18 @@ export class ShadowrocketConverter extends BaseConverter {
         // Shadowrocket can import Clash-like YAML
         const processedNodes = nodes.map((node) => this.processNode(node)).filter(Boolean);
 
-        const config = {
+        let config: Record<string, unknown> = {
             proxies: processedNodes
         };
+
+        const preset = resolvePreset(_options);
+        if (preset) {
+            const plan = buildPlan(
+                processedNodes.map((node: ProxyNode) => node.name),
+                preset
+            );
+            config = { ...config, ...renderShadowrocketTemplate(plan, ruleSourceOptions(_options)) };
+        }
 
         return yaml.dump(config, {
             indent: 2,

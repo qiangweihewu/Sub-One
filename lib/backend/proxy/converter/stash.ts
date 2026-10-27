@@ -9,6 +9,7 @@ export class StashConverter extends ClashConverter {
 
     constructor() {
         super(true); // Stash is Clash Meta compatible
+        this.isStash = true;
     }
 
     protected filterNode(proxy: ProxyNode, options: ConvertOptions): boolean {

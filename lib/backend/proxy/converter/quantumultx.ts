@@ -1,6 +1,9 @@
 /**
  * Sub-One Quantumult X Converter
  */
+import { normalizeNodeNames } from '../template/renderers/names';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { renderQuantumultXTemplate } from '../template/renderers/quantumultx';
 import type { ConvertOptions, ProxyNode } from '../types';
 import { BaseConverter } from './base';
 import { Result } from './utils';
@@ -9,7 +12,20 @@ export class QuantumultXConverter extends BaseConverter {
     name = 'Quantumult X';
 
     async convert(nodes: ProxyNode[], _options: ConvertOptions = {}): Promise<string> {
-        const lines = nodes.map((node) => this.convertSingle(node, _options)).filter(Boolean);
+        const preset = resolvePreset(_options);
+        if (preset) nodes = normalizeNodeNames(nodes);
+        const items = nodes
+            .map((node) => ({ name: node.name, line: this.convertSingle(node, _options) }))
+            .filter((item) => Boolean(item.line));
+        const lines = items.map((item) => item.line);
+
+        if (preset) {
+            const plan = buildPlan(
+                items.map((item) => item.name),
+                preset
+            );
+            return renderQuantumultXTemplate(plan, lines, ruleSourceOptions(_options));
+        }
         return lines.join('\n');
     }
 

@@ -2,6 +2,10 @@
  * Sub-One Egern Converter
  * https://egernapp.com/zh-CN/docs/configuration/proxies
  */
+import yaml from 'js-yaml';
+
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { renderEgernTemplate } from '../template/renderers/egern';
 import type { ConvertOptions, ProxyNode } from '../types';
 import { BaseConverter } from './base';
 import { isPresent } from './utils';
@@ -16,10 +20,21 @@ export class EgernConverter extends BaseConverter {
             .map((node) => this.convertSingle(node))
             .filter(Boolean);
 
-        return (
+        const proxiesYaml =
             'proxies:\n' +
-            list.map((p) => '  - ' + JSON.stringify(p) + '\n').join('')
+            list.map((p) => '  - ' + JSON.stringify(p) + '\n').join('');
+
+        const preset = resolvePreset(_options);
+        if (!preset) return proxiesYaml;
+
+        const plan = buildPlan(
+            list.map((p) => (p as EgernProxy).name as string),
+            preset
         );
+        const { head, ...rest } = renderEgernTemplate(plan, ruleSourceOptions(_options));
+        const dump = (obj: object) =>
+            yaml.dump(obj, { indent: 2, lineWidth: -1, noRefs: true });
+        return dump(head) + proxiesYaml + dump(rest);
     }
 
     private convertSingle(proxy: ProxyNode): EgernProxy | null {

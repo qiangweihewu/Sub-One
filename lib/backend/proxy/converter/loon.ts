@@ -1,6 +1,9 @@
 /**
  * Sub-One Loon Converter
  */
+import { normalizeNodeNames } from '../template/renderers/names';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { renderLoonTemplate } from '../template/renderers/loon';
 import type { ConvertOptions, ProxyNode } from '../types';
 import { BaseConverter } from './base';
 import { Result, isPresent } from './utils';
@@ -29,7 +32,20 @@ export class LoonConverter extends BaseConverter {
     name = 'Loon';
 
     async convert(nodes: ProxyNode[], _options: ConvertOptions = {}): Promise<string> {
-        const lines = nodes.map((node) => this.convertSingle(node, _options)).filter(Boolean);
+        const preset = resolvePreset(_options);
+        if (preset) nodes = normalizeNodeNames(nodes);
+        const items = nodes
+            .map((node) => ({ name: node.name, line: this.convertSingle(node, _options) }))
+            .filter((item) => Boolean(item.line));
+        const lines = items.map((item) => item.line);
+
+        if (preset) {
+            const plan = buildPlan(
+                items.map((item) => item.name),
+                preset
+            );
+            return renderLoonTemplate(plan, lines, ruleSourceOptions(_options));
+        }
         return lines.join('\n');
     }
 

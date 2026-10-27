@@ -2,6 +2,13 @@
  * Sub-One Surfboard Converter
  */
 import type { ConvertOptions, ProxyNode } from '../types';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import {
+    dedupeNodeNames,
+    proxyLineName,
+    renderSurgeTemplate,
+    surfboardWireguardSection
+} from '../template/renderers/surge';
 import { BaseConverter } from './base';
 import { Result } from './utils';
 
@@ -9,8 +16,24 @@ export class SurfboardConverter extends BaseConverter {
     name = 'Surfboard';
 
     async convert(nodes: ProxyNode[], _options: ConvertOptions = {}): Promise<string> {
-        const lines = nodes.map((node) => this.convertSingle(node)).filter(Boolean);
-        return lines.join('\n');
+        const preset = resolvePreset(_options);
+        if (!preset) {
+            const lines = nodes.map((node) => this.convertSingle(node)).filter(Boolean);
+            return lines.join('\n');
+        }
+        const items = dedupeNodeNames(nodes)
+            .map((node) => ({ node, line: this.convertSingle(node) }))
+            .filter((item) => item.line);
+        const lines = items.map((item) => item.line);
+        const plan = buildPlan(lines.map(proxyLineName), preset);
+        return renderSurgeTemplate(plan, {
+            ...ruleSourceOptions(_options),
+            flavor: 'surfboard',
+            proxyLines: lines,
+            wireguardSections: items
+                .filter((item) => item.node.type === 'wireguard')
+                .map((item) => surfboardWireguardSection(item.node))
+        });
     }
 
     private convertSingle(proxy: ProxyNode): string {

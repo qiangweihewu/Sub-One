@@ -2,6 +2,8 @@
  * Sub-One Surge Converter
  */
 import type { ConvertOptions, ProxyNode } from '../types';
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { dedupeNodeNames, proxyLineName, renderSurgeTemplate, splitSurgeOutputs } from '../template/renderers/surge';
 import { BaseConverter } from './base';
 import { Result, isPresent } from './utils';
 
@@ -17,8 +19,22 @@ export class SurgeConverter extends BaseConverter {
     name = 'Surge';
 
     async convert(nodes: ProxyNode[], _options: ConvertOptions = {}): Promise<string> {
-        const lines = nodes.map((node) => this.convertSingle(node, _options)).filter(Boolean);
-        return lines.join('\n');
+        const preset = resolvePreset(_options);
+        if (!preset) {
+            const lines = nodes.map((node) => this.convertSingle(node, _options)).filter(Boolean);
+            return lines.join('\n');
+        }
+        const outputs = dedupeNodeNames(nodes)
+            .map((node) => this.convertSingle(node, _options))
+            .filter(Boolean);
+        const { proxyLines, sections } = splitSurgeOutputs(outputs);
+        const plan = buildPlan(proxyLines.map(proxyLineName), preset);
+        return renderSurgeTemplate(plan, {
+            ...ruleSourceOptions(_options),
+            flavor: 'surge',
+            proxyLines,
+            wireguardSections: sections
+        });
     }
 
     private convertSingle(proxy: ProxyNode, opts: ConvertOptions): string {

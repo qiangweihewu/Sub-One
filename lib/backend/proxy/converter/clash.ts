@@ -3,6 +3,8 @@
  */
 import yaml from 'js-yaml';
 
+import { buildPlan, resolvePreset, ruleSourceOptions } from '../template';
+import { clashProviderFormat, renderClashTemplate } from '../template/renderers/clash';
 import type { ConvertOptions, ProxyNode } from '../types';
 import { BaseConverter } from './base';
 import { isPresent } from './utils';
@@ -10,6 +12,7 @@ import { isPresent } from './utils';
 export class ClashConverter extends BaseConverter {
     name = 'Clash';
     protected isMeta = false;
+    protected isStash = false;
 
     constructor(isMeta = false) {
         super();
@@ -42,9 +45,23 @@ export class ClashConverter extends BaseConverter {
             }
         });
 
-        const config = {
+        let config: Record<string, unknown> = {
             proxies: list
         };
+
+        const preset = resolvePreset(options);
+        if (preset) {
+            const plan = buildPlan(
+                list.map((node) => node.name),
+                preset
+            );
+            const { head, ...rest } = renderClashTemplate(plan, {
+                ...ruleSourceOptions(options),
+                providerFormat: clashProviderFormat(options.userAgent, this.isStash),
+                meta: this.isMeta && !this.isStash
+            });
+            config = { ...head, proxies: list, ...rest };
+        }
 
         return yaml.dump(config, {
             indent: 2,
