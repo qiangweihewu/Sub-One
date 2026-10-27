@@ -20,6 +20,11 @@ export const defaultSettings: AppConfig = {
         'api.v1.mk'
     ],
 
+    // 分流模板（老用户 KV 中无该字段时同样取 balanced）
+    ruleTemplate: 'balanced',
+    ruleCdn: 'testingcf',
+    ruleCdnTemplate: '',
+
     // Telegram 通知
     BotToken: '',
     ChatID: '',

@@ -176,6 +176,28 @@ const { t } = useI18n();
                     />
                 </div>
 
+                <!-- 分流模板 (可选) -->
+                <div>
+                    <label
+                        for="profile-template"
+                        class="mb-2 block text-sm font-bold text-gray-700 dark:text-gray-300"
+                    >
+                        {{ t('widgets.profile.modal.templateLabel') }}
+                    </label>
+                    <select
+                        id="profile-template"
+                        v-model="localProfile.template"
+                        name="profileTemplate"
+                        class="input-modern-enhanced"
+                    >
+                        <option :value="undefined">{{ t('widgets.profile.modal.templateFollow') }}</option>
+                        <option value="none">{{ t('widgets.profile.modal.templateNone') }}</option>
+                        <option value="minimal">{{ t('widgets.profile.modal.templateMinimal') }}</option>
+                        <option value="balanced">{{ t('widgets.profile.modal.templateBalanced') }}</option>
+                        <option value="full">{{ t('widgets.profile.modal.templateFull') }}</option>
+                    </select>
+                </div>
+
                 <!-- 选择区域 -->
                 <div class="grid grid-cols-1 gap-6 pt-2 md:grid-cols-2">
                     <!-- 选择订阅 -->

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import type { AppConfig, Profile } from '@/common/types/index';
 import { copyToClipboard } from '@/common/utils/utils';
+import { ref } from 'vue';
 
 import { useI18n } from 'vue-i18n';
 import { useToastStore } from '@/stores/useNotificationStore';
@@ -16,6 +17,9 @@ const emit = defineEmits<{
 }>();
 
 const { showToast } = useToastStore();
+
+/** 分流模板：空 = 跟随设置，不在链接上追加参数 */
+const template = ref('');
 
 const close = () => {
     emit('update:show', false);
@@ -88,7 +92,8 @@ const generateUrl = (format: string) => {
     const url = `${baseUrl}/${token}/${id}`;
 
     if (format === 'base64') return url;
-    return `${url}?target=${format}`;
+    const tplParam = template.value ? `&template=${template.value}` : '';
+    return `${url}?target=${format}${tplParam}`;
 };
 
 const handleCopy = async (option: (typeof exportOptions)[0]) => {
@@ -158,6 +163,26 @@ const handleCopy = async (option: (typeof exportOptions)[0]) => {
                             <!-- eslint-disable-next-line vue/no-v-html -->
                             <p class="text-xs leading-relaxed text-warning-700 dark:text-warning-400" v-html="t('widgets.profile.exportModal.tokenHint')"></p>
                         </div>
+                    </div>
+
+                    <div class="px-4 pb-2">
+                        <label
+                            for="export-template"
+                            class="mb-1 block text-xs font-bold text-gray-600 dark:text-gray-400"
+                            >{{ t('widgets.profile.exportModal.templateLabel') }}</label
+                        >
+                        <select
+                            id="export-template"
+                            v-model="template"
+                            name="exportTemplate"
+                            class="input-modern-enhanced"
+                        >
+                            <option value="">{{ t('widgets.profile.exportModal.templateFollow') }}</option>
+                            <option value="none">{{ t('widgets.profile.modal.templateNone') }}</option>
+                            <option value="minimal">{{ t('widgets.profile.modal.templateMinimal') }}</option>
+                            <option value="balanced">{{ t('widgets.profile.modal.templateBalanced') }}</option>
+                            <option value="full">{{ t('widgets.profile.modal.templateFull') }}</option>
+                        </select>
                     </div>
 
                     <div

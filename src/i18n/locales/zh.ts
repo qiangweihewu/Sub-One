@@ -509,7 +509,13 @@ export default {
                 noNodeFound: '没有找到节点',
                 renameRules: '订阅组专属重命名规则 (可选)',
                 renameRulesHint: '在所有订阅汇入此组后做最终重命名',
-                renameRulesPlaceholder: '# 订阅组专属重命名规则 (每行一条: 匹配{\'@\'}替换，省略{\'@\'}内容直接删除)\n# 支持正则表达式\n香港|Hong Kong{\'@\'}HK\n\\[.*?\\]{\'@\'}'
+                renameRulesPlaceholder: '# 订阅组专属重命名规则 (每行一条: 匹配{\'@\'}替换，省略{\'@\'}内容直接删除)\n# 支持正则表达式\n香港|Hong Kong{\'@\'}HK\n\\[.*?\\]{\'@\'}',
+                templateLabel: '分流模板',
+                templateFollow: '跟随全局设置',
+                templateNone: '仅节点',
+                templateMinimal: '精简',
+                templateBalanced: '均衡',
+                templateFull: '完整'
             },
             exportModal: {
                 generalSub: '通用订阅',
@@ -519,6 +525,8 @@ export default {
                 title: '导出订阅',
                 tokenHint: '请确保已在设置中配置了 <strong>订阅组分享 Token</strong>，否则链接无法访问。',
                 copyLink: '复制链接',
+                templateLabel: '分流模板',
+                templateFollow: '跟随设置',
                 cancel: '取消'
             }
         },
@@ -632,7 +640,23 @@ export default {
                     apiUrl: '外部转换API地址',
                     manualInput: '-- 手动输入 --',
                     apiUrlPlaceholder: '例如：api-suc.0z.gs',
-                    apiUrlHint: '提示：直接填写域名即可，系统会自动补全路径并拼接参数。'
+                    apiUrlHint: '提示：直接填写域名即可，系统会自动补全路径并拼接参数。',
+                    templateTitle: '分流模板',
+                    templateDesc: '内置转换为 Clash / Sing-Box / Surge / Loon / QX / Shadowrocket 等客户端生成策略组与分流规则。可被订阅组或链接参数 &template= 覆盖。',
+                    templateNone: '仅节点（不含分流规则）',
+                    templateMinimal: '精简',
+                    templateBalanced: '均衡（推荐）',
+                    templateFull: '完整',
+                    templateMinimalDesc: '精简：局域网直连、国内直连、其余走代理',
+                    templateBalancedDesc: '均衡：在精简基础上增加 AI、Telegram、YouTube、谷歌、GitHub 分组',
+                    templateFullDesc: '完整：再增加广告拦截、流媒体、社交媒体、微软、苹果分组',
+                    templateNoneDesc: '仅输出节点，不生成策略组与规则',
+                    templateExternalHint: '已开启外部转换 API：内置分流模板不会生效，输出由外部转换器决定。',
+                    ruleCdn: '规则 CDN',
+                    ruleCdnCustom: '自定义',
+                    ruleCdnTemplate: '自定义 URL 模板',
+                    ruleCdnTemplateHint: '可用占位符：{\'{owner}\'} {\'{repo}\'} {\'{branch}\'} {\'{path}\'}',
+                    templateIosHint: 'Surge / Loon / QX / Shadowrocket 等若以“节点订阅”方式使用，请在链接后加 &template=none'
                 },
                 tg: {
                     title: 'Telegram 通知',

@@ -50,6 +50,7 @@
 | Module | Feature Description |
 | :--- | :--- |
 | ⚡ **Built-in Conversion Engine** | Completely eliminates dependence on external Subconverter instances; all parsing and conversions run locally or inside Workers with zero data leakage and zero third-party latency |
+| 🧭 **Built-in Routing Templates** | Auto-generates proxy groups and routing rules for Clash / Sing-Box / Surge / Loon / QX / Shadowrocket. Choose via Settings, per profile, or the link parameter `&template=none\|minimal\|balanced\|full` (default `balanced`). If you use Surge / Loon / QX / Shadowrocket only as a plain node subscription, append `&template=none` to the link |
 | 🔄 **Dual Conversion Modes** | Supports both high-performance built-in engines and external conversion APIs, balancing enterprise security with advanced customization |
 | 💾 **Dual Storage Engines** | Native support for **Cloudflare KV** (sub-millisecond reads) and **Cloudflare D1** (SQL relational database) with zero-downtime automated migrations from the dashboard |
 | 🔐 **Modern Authentication** | Replaces static environment variables with intuitive first-time setup and secure SHA-256 + JWT token multi-account authentication |

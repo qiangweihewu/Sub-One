@@ -50,6 +50,7 @@
 | 模块 | 特性说明 |
 | :--- | :--- |
 | ⚡ **内置转换引擎** | 彻底摆脱对外部 Subconverter 依赖，解析与转换全在本地或 Worker 内完成，零隐私泄露风险、无第三方网络延迟 |
+| 🧭 **内置分流模板** | Clash / Sing-Box / Surge / Loon / QX / Shadowrocket 自动生成策略组与分流规则，可在设置、订阅组或链接参数 `&template=none\|minimal\|balanced\|full` 中选择（默认 `balanced`）。Surge / Loon / QX / Shadowrocket 若仅作为节点订阅使用，请在链接后加 `&template=none` |
 | 🔄 **双转换模式** | 支持内置极速内核与外部转换 API 双模式，兼顾极致安全性与深度定制需求 |
 | 💾 **双存储引擎** | 原生适配 **Cloudflare KV**（毫秒级极速读取）与 **Cloudflare D1**（SQL 关系型数据库），后台支持一键无损平滑迁移 |
 | 🔐 **现代化安全认证** | 告别繁琐易错的环境变量配置，内置开箱即用的管理员引导初始化与基于 SHA-256 + JWT Token 的安全认证 |

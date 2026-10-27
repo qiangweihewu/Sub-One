@@ -67,6 +67,11 @@ const defaultSettings: AppConfig = {
         'api.v1.mk'
     ],
 
+    // 分流模板配置
+    ruleTemplate: 'balanced',
+    ruleCdn: 'testingcf',
+    ruleCdnTemplate: '',
+
     // Telegram 通知配置
     BotToken: '',
     ChatID: '',
@@ -635,6 +640,82 @@ watch(
                                             >{{ t('widgets.settings.modal.convert.apiUrlHint') }}</span
                                         >
                                     </p>
+                                </div>
+                                
+                                <!-- 分流模板 -->
+                                <div class="md:col-span-2">
+                                    <label
+                                        for="ruleTemplate"
+                                        class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >{{ t('widgets.settings.modal.convert.templateTitle') }}</label
+                                    >
+                                    <select
+                                        id="ruleTemplate"
+                                        v-model="settings.ruleTemplate"
+                                        name="ruleTemplate"
+                                        class="input-modern-enhanced w-full"
+                                    >
+                                        <option value="none">{{ t('widgets.settings.modal.convert.templateNone') }}</option>
+                                        <option value="minimal">{{ t('widgets.settings.modal.convert.templateMinimal') }}</option>
+                                        <option value="balanced">{{ t('widgets.settings.modal.convert.templateBalanced') }}</option>
+                                        <option value="full">{{ t('widgets.settings.modal.convert.templateFull') }}</option>
+                                    </select>
+                                    <p class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+                                        {{ t('widgets.settings.modal.convert.templateDesc') }}
+                                    </p>
+                                    <ul class="mt-1 space-y-0.5 text-xs text-gray-500 dark:text-gray-400">
+                                        <li>{{ t('widgets.settings.modal.convert.templateNoneDesc') }}</li>
+                                        <li>{{ t('widgets.settings.modal.convert.templateMinimalDesc') }}</li>
+                                        <li>{{ t('widgets.settings.modal.convert.templateBalancedDesc') }}</li>
+                                        <li>{{ t('widgets.settings.modal.convert.templateFullDesc') }}</li>
+                                    </ul>
+                                    <p
+                                        v-if="settings.useExternalConverter"
+                                        class="mt-2 text-xs text-warning-600 dark:text-warning-400"
+                                    >
+                                        {{ t('widgets.settings.modal.convert.templateExternalHint') }}
+                                    </p>
+                                    <p class="mt-2 text-xs text-info-600 dark:text-info-400">
+                                        {{ t('widgets.settings.modal.convert.templateIosHint') }}
+                                    </p>
+                                </div>
+
+                                <!-- 规则 CDN -->
+                                <div class="md:col-span-2">
+                                    <label
+                                        for="ruleCdn"
+                                        class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                        >{{ t('widgets.settings.modal.convert.ruleCdn') }}</label
+                                    >
+                                    <select
+                                        id="ruleCdn"
+                                        v-model="settings.ruleCdn"
+                                        name="ruleCdn"
+                                        class="input-modern-enhanced w-full"
+                                    >
+                                        <option value="testingcf">testingcf.jsdelivr.net</option>
+                                        <option value="jsdelivr">cdn.jsdelivr.net</option>
+                                        <option value="raw">raw.githubusercontent.com</option>
+                                        <option value="custom">{{ t('widgets.settings.modal.convert.ruleCdnCustom') }}</option>
+                                    </select>
+                                    <div v-if="settings.ruleCdn === 'custom'" class="mt-3">
+                                        <label
+                                            for="ruleCdnTemplate"
+                                            class="mb-2 block text-sm font-medium text-gray-700 dark:text-gray-300"
+                                            >{{ t('widgets.settings.modal.convert.ruleCdnTemplate') }}</label
+                                        >
+                                        <input
+                                            id="ruleCdnTemplate"
+                                            v-model="settings.ruleCdnTemplate"
+                                            name="ruleCdnTemplate"
+                                            type="text"
+                                            class="input-modern-enhanced w-full"
+                                            placeholder="https://example.com/gh/{owner}/{repo}@{branch}/{path}"
+                                        />
+                                        <p class="mt-1.5 text-xs text-gray-500 dark:text-gray-400">
+                                            {{ t('widgets.settings.modal.convert.ruleCdnTemplateHint') }}
+                                        </p>
+                                    </div>
                                 </div>
                             </div>
                         </section>

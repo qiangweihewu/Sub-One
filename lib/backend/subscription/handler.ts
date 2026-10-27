@@ -2,6 +2,8 @@ import { KV_KEY_PROFILES, KV_KEY_SETTINGS, KV_KEY_SUBS } from '../config/constan
 import { GLOBAL_USER_AGENT, defaultSettings } from '../config/defaults';
 import { ProxyNode, convert, parse, process, handleRenaming } from '../proxy';
 import { AppConfig, Profile, SubConfig, Subscription } from '../proxy/types';
+import { DEFAULT_TEMPLATE, isTemplateName } from '../proxy/template/catalog';
+import { isRuleCdn } from '../proxy/template/sources';
 import { StorageFactory } from '../services/storage';
 import { getStorageBackendInfo } from '../services/storage-backend';
 import { Env } from '../types';
@@ -492,8 +494,17 @@ export async function handleSubRequest(
                     node.udp = forceUdp;
                 });
             }
+            // 分流模板优先级：URL 参数 > 订阅组 > 全局设置 > 默认；非法值忽略
+            const template =
+                [url.searchParams.get('template'), activeProfile?.template, config.ruleTemplate].find(
+                    isTemplateName
+                ) ?? DEFAULT_TEMPLATE;
             convertedContent = await convert(combinedNodes, targetFormat, {
-                filename: subName
+                filename: subName,
+                template,
+                ruleCdn: isRuleCdn(config.ruleCdn) ? config.ruleCdn : undefined,
+                ruleCdnTemplate: config.ruleCdnTemplate,
+                userAgent: userAgentHeader
             });
         }
 

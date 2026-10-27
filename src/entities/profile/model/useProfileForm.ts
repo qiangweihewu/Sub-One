@@ -21,7 +21,8 @@ export function useProfileForm(props: UseProfileFormProps, onSave: (profile: Pro
         customId: '',
         expiresAt: '',
         type: 'base64',
-        rename: ''
+        rename: '',
+        template: undefined
     });
 
     const subscriptionSearchTerm = ref('');

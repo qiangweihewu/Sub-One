@@ -509,7 +509,13 @@ export default {
                 noNodeFound: 'No nodes found',
                 renameRules: 'Profile-Level Rename Rules (Optional)',
                 renameRulesHint: 'Final rename applied after merging all subs in this profile',
-                renameRulesPlaceholder: '# Profile rename rules (One per line: pattern{\'@\'}replacement, omit replacement to delete)\n# Supports regex\nHong Kong{\'@\'}HK\n\\[.*?\\]{\'@\'}'
+                renameRulesPlaceholder: '# Profile rename rules (One per line: pattern{\'@\'}replacement, omit replacement to delete)\n# Supports regex\nHong Kong{\'@\'}HK\n\\[.*?\\]{\'@\'}',
+                templateLabel: 'Routing template',
+                templateFollow: 'Follow global',
+                templateNone: 'Nodes only',
+                templateMinimal: 'Minimal',
+                templateBalanced: 'Balanced',
+                templateFull: 'Full'
             },
             exportModal: {
                 generalSub: 'General Sub',
@@ -519,6 +525,8 @@ export default {
                 title: 'Export Subscription',
                 tokenHint: 'Please ensure <strong>Profile Share Token</strong> is configured in settings, otherwise the link will be inaccessible.',
                 copyLink: 'Copy Link',
+                templateLabel: 'Routing template',
+                templateFollow: 'Follow settings',
                 cancel: 'Cancel'
             }
         },
@@ -632,7 +640,23 @@ export default {
                     apiUrl: 'External API URL',
                     manualInput: '-- Manual Input --',
                     apiUrlPlaceholder: 'e.g., api-suc.0z.gs',
-                    apiUrlHint: 'Hint: Just enter the domain name, the system will auto-complete the path and parameters.'
+                    apiUrlHint: 'Hint: Just enter the domain name, the system will auto-complete the path and parameters.',
+                    templateTitle: 'Routing Template',
+                    templateDesc: 'The built-in converter generates proxy groups and routing rules for Clash / Sing-Box / Surge / Loon / QX / Shadowrocket. Can be overridden per profile or via the &template= link parameter.',
+                    templateNone: 'Nodes only (no rules)',
+                    templateMinimal: 'Minimal',
+                    templateBalanced: 'Balanced (recommended)',
+                    templateFull: 'Full',
+                    templateMinimalDesc: 'Minimal: LAN and CN direct, everything else via proxy',
+                    templateBalancedDesc: 'Balanced: adds AI, Telegram, YouTube, Google and GitHub groups',
+                    templateFullDesc: 'Full: also adds ad blocking, streaming, social, Microsoft and Apple groups',
+                    templateNoneDesc: 'Nodes only, no groups or rules',
+                    templateExternalHint: 'External converter API is on: built-in routing templates do not apply, the output is decided by the external converter.',
+                    ruleCdn: 'Rule CDN',
+                    ruleCdnCustom: 'Custom',
+                    ruleCdnTemplate: 'Custom URL template',
+                    ruleCdnTemplateHint: 'Placeholders: {\'{owner}\'} {\'{repo}\'} {\'{branch}\'} {\'{path}\'}',
+                    templateIosHint: 'For Surge / Loon / QX / Shadowrocket used as a plain node subscription, append &template=none to the link'
                 },
                 tg: {
                     title: 'Telegram Notification',
