@@ -1349,13 +1349,19 @@ export function parseWireGuard(uri: string): ProxyNode | null {
             }
         }
 
-        // 补全 peers
+        // 补全 peers（URI 未给 allowed-ips 时默认全部流量）
+        const rawAllowed = (proxy['allowed-ips'] ?? proxy['allowed']) as unknown;
+        const allowedIps =
+            typeof rawAllowed === 'string' && rawAllowed.trim()
+                ? rawAllowed.split(',').map((i) => i.trim()).filter(Boolean)
+                : ['0.0.0.0/0', '::/0'];
         if (proxy['public-key'] && !proxy.peers) {
             proxy.peers = [
                 {
                     endpoint: `${server}:${port}`,
                     'public-key': proxy['public-key'],
                     'pre-shared-key': proxy['pre-shared-key'],
+                    'allowed-ips': allowedIps,
                     reserved: proxy.reserved as number[]
                 }
             ];
